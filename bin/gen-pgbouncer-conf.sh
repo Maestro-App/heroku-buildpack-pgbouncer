@@ -52,6 +52,12 @@ if [ -n "${PGBOUNCER_MAX_PREPARED_STATEMENTS:-}" ]; then
   sed -i "/^\[databases\]/i max_prepared_statements = ${PGBOUNCER_MAX_PREPARED_STATEMENTS}" "$CONFIG_DIR/pgbouncer.ini"
 fi
 
+# Lets apps that switch schemas with SET search_path use transaction pooling
+# on PostgreSQL 18+, which reports search_path changes to the client.
+if [ -n "${PGBOUNCER_TRACK_EXTRA_PARAMETERS:-}" ]; then
+  sed -i "/^\[databases\]/i track_extra_parameters = ${PGBOUNCER_TRACK_EXTRA_PARAMETERS}" "$CONFIG_DIR/pgbouncer.ini"
+fi
+
 function urldecode() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 for POSTGRES_URL in $POSTGRES_URLS

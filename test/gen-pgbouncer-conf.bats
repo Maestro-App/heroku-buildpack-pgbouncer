@@ -73,6 +73,21 @@ teardown_file() {
     assert grep "max_prepared_statements = 123" "$PGBOUNCER_CONFIG_DIR/pgbouncer.ini"
 }
 
+@test "successfully allows changing of track_extra_parameters" {
+    export DATABASE_URL="postgres://user:pass@host:5432/name?query"
+    export PGBOUNCER_TRACK_EXTRA_PARAMETERS="IntervalStyle, search_path"
+    run bash bin/gen-pgbouncer-conf.sh
+    assert_success
+    assert grep "^track_extra_parameters = IntervalStyle, search_path$" "$PGBOUNCER_CONFIG_DIR/pgbouncer.ini"
+}
+
+@test "leaves track_extra_parameters at pgbouncer's default when unset" {
+    export DATABASE_URL="postgres://user:pass@host:5432/name?query"
+    run bash bin/gen-pgbouncer-conf.sh
+    assert_success
+    refute grep "track_extra_parameters" "$PGBOUNCER_CONFIG_DIR/pgbouncer.ini"
+}
+
 @test "successfully handles URI-encoded user/pass combinations" {
     export DATABASE_URL="postgresql://%22I+have+speci%40l+charcters%22:c00lp%40%25sword@host:5432/name?query"
     run bash bin/gen-pgbouncer-conf.sh

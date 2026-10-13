@@ -134,6 +134,7 @@ Some settings are configurable through app config vars at runtime. Refer to the 
 - `PGBOUNCER_SERVER_TLS_SSLMODE` Default is `require`.
 - `PGBOUNCER_POOL_MODE` Default is transaction
 - `PGBOUNCER_MAX_PREPARED_STATEMENTS` Default is 0
+- `PGBOUNCER_TRACK_EXTRA_PARAMETERS` Default is unset (pgbouncer's own default, `IntervalStyle`). Set to `IntervalStyle, search_path` to track `search_path` in transaction mode on PostgreSQL 18+.
 - `PGBOUNCER_MAX_CLIENT_CONN` Default is 100
 - `PGBOUNCER_DEFAULT_POOL_SIZE` Default is 1
 - `PGBOUNCER_MIN_POOL_SIZE` Default is 0
