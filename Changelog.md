@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Update pgbouncer to v1.26.1, which re-applies tracked startup parameters such as statement_timeout on every server connection
 * Align community and licensing docs with salesforce/oss-template
 
 ## v0.21.0 (June 30, 2026)
