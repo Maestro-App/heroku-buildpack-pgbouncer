@@ -1,0 +1,37 @@
+name: Build binaries
+
+# Builds pgbouncer-<stack>.tgz on amd64 runners, which Heroku dynos are. Docker
+# on Apple silicon can't run the heroku-26 build image under emulation. Commit
+# the uploaded artifacts to update the vendored binaries.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - support/pgbouncer-build
+      - support/patchfiles/**
+      - .github/workflows/build-binaries.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        stack: [heroku-22, heroku-24, heroku-26]
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v7
+    - name: Build pgbouncer
+      run: |
+        image="heroku/${STACK/-/:}-build"
+        docker run --rm -u root -v "$PWD:/buildpack" -e "STACK=$STACK" -w /buildpack "$image" support/pgbouncer-build
+      env:
+        STACK: ${{ matrix.stack }}
+    - name: Check the buildpack installs and starts it
+      run: bash test/test-stack.sh ${{ matrix.stack }}
+    - uses: actions/upload-artifact@v4
+      with:
+        name: pgbouncer-${{ matrix.stack }}
+        path: pgbouncer-${{ matrix.stack }}.tgz
+        if-no-files-found: error
