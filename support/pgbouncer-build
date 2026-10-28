@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-PGBOUNCER_VERSION=${PGBOUNCER_VERSION-1.25.2}
+PGBOUNCER_VERSION=${PGBOUNCER_VERSION-1.26.1}
 
 pgbouncer_tarball_url=https://www.pgbouncer.org/downloads/files/${PGBOUNCER_VERSION}/pgbouncer-${PGBOUNCER_VERSION}.tar.gz
 
@@ -31,7 +31,9 @@ fi
 
 		./configure \
 			--prefix=/tmp/pgbouncer
-	make -j 2 install
+	# From 1.26 the tarball has no prebuilt man pages, and the stack images have
+	# no pandoc to build them; a dyno doesn't need them.
+	make -j 2 install dist_man_MANS=
 )
 
 tar -zcvf /buildpack/pgbouncer-"${STACK}".tgz -C /tmp/pgbouncer .
